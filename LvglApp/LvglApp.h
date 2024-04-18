@@ -4,6 +4,7 @@
 #define __LVGL_DXE_H__
 
 #include "lvgl/lvgl.h"
+#include "lv_port_indev.h"
 
 #include <Uefi.h>
 #include <Library/UefiLib.h>
@@ -13,6 +14,10 @@
 #include <Library/DebugLib.h>
 #include <Library/BaseLib.h>
 #include <Library/UefiApplicationEntryPoint.h>
+#include <Protocol/GraphicsOutput.h>
+#include <Protocol/SimpleTextInEx.h>
+#include <Protocol/SimplePointer.h>
+#include <Protocol/AbsolutePointer.h>
 
 VOID
 EFIAPI
