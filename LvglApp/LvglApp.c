@@ -44,12 +44,26 @@ TestDemo (
   VOID
   )
 {
+  EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
+  EFI_STATUS                         Status;
+  UINTN                              Width, Heigth;
+  UINTN                              BufSize;
+
+  Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
+  if (EFI_ERROR(Status)) {
+    return;
+  }
+
   lv_init();
 
-  lv_display_t *display = lv_display_create(720, 480);
+  Width  = GraphicsOutput->Mode->Info->HorizontalResolution;
+  Heigth = GraphicsOutput->Mode->Info->VerticalResolution;
+  lv_display_t *display = lv_display_create(Width, Heigth);
 
-  static lv_color32_t buf1[720 * 480];
-  lv_display_set_buffers(display, buf1, NULL, sizeof(buf1), LV_DISPLAY_RENDER_MODE_FULL);
+  static lv_color32_t *buf1;
+  BufSize = Width * Heigth * sizeof (lv_color32_t);
+  buf1 = AllocateZeroPool (BufSize);
+  lv_display_set_buffers(display, buf1, NULL, BufSize, LV_DISPLAY_RENDER_MODE_FULL);
 
   lv_display_set_flush_cb(display, (lv_display_flush_cb_t)my_disp_flush);
 
@@ -58,6 +72,8 @@ TestDemo (
   lv_demo_keypad_encoder();
   // lv_demo_widgets();
 
+  gST->ConOut->ClearScreen (gST->ConOut);
+  gST->ConOut->EnableCursor (gST->ConOut, FALSE);
   while (1) {
     lv_tick_inc(5);
     lv_task_handler();
@@ -72,6 +88,7 @@ TestDemo (
 
   gST->ConOut->ClearScreen (gST->ConOut);
   gST->ConOut->SetCursorPosition (gST->ConOut, 0, 0);
+  gST->ConOut->EnableCursor (gST->ConOut, TRUE);
 
   return;
 }
