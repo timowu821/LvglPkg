@@ -2,8 +2,16 @@
 
 ## Build
 
+#### X64-MSVC
 ```
 build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2022 -b RELEASE
+```
+
+#### AARCH64-GCC
+```
+export GCC5_AARCH64_PREFIX=aarch64-none-linux-gnu-
+. edksetup.sh
+build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC5 -b RELEASE
 ```
 
 ## LvglLib Usage
