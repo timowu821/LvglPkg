@@ -27,6 +27,8 @@
   lv_conf.h
 
 # Wrapper header files start #
+  limits.h
+  stdint.h
   stdio.h
   stdarg.h
   stddef.h
@@ -69,13 +71,20 @@
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_arc.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_border.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_fill.c
-  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_hal.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_img.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_label.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_layer.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_line.c
+  lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_stm32_hal.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_triangle.c
   lvgl/src/draw/nema_gfx/lv_draw_nema_gfx_utils.c
+  lvgl/src/draw/nema_gfx/lv_nema_gfx_path.c
+  lvgl/src/draw/nxp/g2d/lv_draw_buf_g2d.c
+  lvgl/src/draw/nxp/g2d/lv_draw_g2d.c
+  lvgl/src/draw/nxp/g2d/lv_draw_g2d_fill.c
+  lvgl/src/draw/nxp/g2d/lv_draw_g2d_img.c
+  lvgl/src/draw/nxp/g2d/lv_g2d_buf_map.c
+  lvgl/src/draw/nxp/g2d/lv_g2d_utils.c
   lvgl/src/draw/nxp/pxp/lv_draw_buf_pxp.c
   lvgl/src/draw/nxp/pxp/lv_draw_pxp.c
   lvgl/src/draw/nxp/pxp/lv_draw_pxp_fill.c
@@ -115,7 +124,7 @@
   lvgl/src/draw/sw/lv_draw_sw_border.c
   lvgl/src/draw/sw/lv_draw_sw_box_shadow.c
   lvgl/src/draw/sw/lv_draw_sw_fill.c
-  lvgl/src/draw/sw/lv_draw_sw_gradient.c
+  lvgl/src/draw/sw/lv_draw_sw_grad.c
   lvgl/src/draw/sw/lv_draw_sw_img.c
   lvgl/src/draw/sw/lv_draw_sw_letter.c
   lvgl/src/draw/sw/lv_draw_sw_line.c
@@ -123,6 +132,7 @@
   lvgl/src/draw/sw/lv_draw_sw_mask_rect.c
   lvgl/src/draw/sw/lv_draw_sw_transform.c
   lvgl/src/draw/sw/lv_draw_sw_triangle.c
+  lvgl/src/draw/sw/lv_draw_sw_utils.c
   lvgl/src/draw/sw/lv_draw_sw_vector.c
   lvgl/src/draw/sw/blend/lv_draw_sw_blend.c
   lvgl/src/draw/sw/blend/lv_draw_sw_blend_to_al88.c
@@ -182,6 +192,12 @@
   lvgl/src/drivers/sdl/lv_sdl_mouse.c
   lvgl/src/drivers/sdl/lv_sdl_mousewheel.c
   lvgl/src/drivers/sdl/lv_sdl_window.c
+  lvgl/src/drivers/uefi/lv_uefi_context.c
+  lvgl/src/drivers/uefi/lv_uefi_display.c
+  lvgl/src/drivers/uefi/lv_uefi_indev_keyboard.c
+  lvgl/src/drivers/uefi/lv_uefi_indev_pointer.c
+  lvgl/src/drivers/uefi/lv_uefi_indev_touch.c
+  lvgl/src/drivers/uefi/lv_uefi_private.c
   lvgl/src/drivers/wayland/lv_wayland.c
   lvgl/src/drivers/wayland/lv_wayland_smm.c
   lvgl/src/drivers/windows/lv_windows_context.c
@@ -220,6 +236,7 @@
   lvgl/src/font/lv_font_unscii_16.c
   lvgl/src/font/lv_font_unscii_8.c
   lvgl/src/indev/lv_indev.c
+  lvgl/src/indev/lv_indev_gesture.c
   lvgl/src/indev/lv_indev_scroll.c
   lvgl/src/layouts/lv_layout.c
   lvgl/src/layouts/flex/lv_flex.c
@@ -228,6 +245,11 @@
   lvgl/src/libs/barcode/lv_barcode.c
   lvgl/src/libs/bin_decoder/lv_bin_decoder.c
   lvgl/src/libs/bmp/lv_bmp.c
+  lvgl/src/libs/expat/xmlparse.c
+  lvgl/src/libs/expat/xmlrole.c
+  lvgl/src/libs/expat/xmltok.c
+  lvgl/src/libs/expat/xmltok_impl.c
+  lvgl/src/libs/expat/xmltok_ns.c
   lvgl/src/libs/ffmpeg/lv_ffmpeg.c
   lvgl/src/libs/freetype/lv_freetype.c
   lvgl/src/libs/freetype/lv_freetype_glyph.c
@@ -240,6 +262,7 @@
   lvgl/src/libs/fsdrv/lv_fs_memfs.c
   lvgl/src/libs/fsdrv/lv_fs_posix.c
   lvgl/src/libs/fsdrv/lv_fs_stdio.c
+  lvgl/src/libs/fsdrv/lv_fs_uefi.c
   lvgl/src/libs/fsdrv/lv_fs_win32.c
   lvgl/src/libs/gif/gifdec.c
   lvgl/src/libs/gif/lv_gif.c
@@ -253,6 +276,7 @@
   lvgl/src/libs/rle/lv_rle.c
   lvgl/src/libs/rlottie/lv_rlottie.c
   lvgl/src/libs/svg/lv_svg.c
+  lvgl/src/libs/svg/lv_svg_decoder.c
   lvgl/src/libs/svg/lv_svg_parser.c
   lvgl/src/libs/svg/lv_svg_render.c
   lvgl/src/libs/svg/lv_svg_token.c
@@ -270,6 +294,7 @@
   lvgl/src/misc/lv_color_op.c
   lvgl/src/misc/lv_event.c
   lvgl/src/misc/lv_fs.c
+  lvgl/src/misc/lv_grad.c
   lvgl/src/misc/lv_iter.c
   lvgl/src/misc/lv_ll.c
   lvgl/src/misc/lv_log.c
@@ -294,11 +319,13 @@
   lvgl/src/misc/cache/lv_image_header_cache.c
   lvgl/src/osal/lv_cmsis_rtos2.c
   lvgl/src/osal/lv_freertos.c
+  lvgl/src/osal/lv_linux.c
   lvgl/src/osal/lv_mqx.c
   lvgl/src/osal/lv_os.c
   lvgl/src/osal/lv_os_none.c
   lvgl/src/osal/lv_pthread.c
   lvgl/src/osal/lv_rtthread.c
+  lvgl/src/osal/lv_sdl2.c
   lvgl/src/osal/lv_windows.c
   lvgl/src/others/file_explorer/lv_file_explorer.c
   lvgl/src/others/font_manager/lv_font_manager.c
@@ -313,7 +340,36 @@
   lvgl/src/others/observer/lv_observer.c
   lvgl/src/others/snapshot/lv_snapshot.c
   lvgl/src/others/sysmon/lv_sysmon.c
+  lvgl/src/others/test/lv_test_display.c
+  lvgl/src/others/test/lv_test_helpers.c
+  lvgl/src/others/test/lv_test_indev.c
+  lvgl/src/others/test/lv_test_indev_gesture.c
+  lvgl/src/others/test/lv_test_screenshot_compare.c
   lvgl/src/others/vg_lite_tvg/vg_lite_matrix.c
+  lvgl/src/others/xml/lv_xml.c
+  lvgl/src/others/xml/lv_xml_base_types.c
+  lvgl/src/others/xml/lv_xml_component.c
+  lvgl/src/others/xml/lv_xml_parser.c
+  lvgl/src/others/xml/lv_xml_style.c
+  lvgl/src/others/xml/lv_xml_utils.c
+  lvgl/src/others/xml/lv_xml_widget.c
+  lvgl/src/others/xml/parsers/lv_xml_bar_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_buttonmatrix_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_button_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_chart_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_dropdown_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_event_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_image_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_keyboard_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_label_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_obj_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_roller_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_scale_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_slider_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_spangroup_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_table_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_tabview_parser.c
+  lvgl/src/others/xml/parsers/lv_xml_textarea_parser.c
   lvgl/src/stdlib/lv_mem.c
   lvgl/src/stdlib/builtin/lv_mem_core_builtin.c
   lvgl/src/stdlib/builtin/lv_sprintf_builtin.c
@@ -326,6 +382,7 @@
   lvgl/src/stdlib/rtthread/lv_mem_core_rtthread.c
   lvgl/src/stdlib/rtthread/lv_sprintf_rtthread.c
   lvgl/src/stdlib/rtthread/lv_string_rtthread.c
+  lvgl/src/stdlib/uefi/lv_mem_core_uefi.c
   lvgl/src/themes/lv_theme.c
   lvgl/src/themes/default/lv_theme_default.c
   lvgl/src/themes/mono/lv_theme_mono.c
@@ -355,12 +412,14 @@
   lvgl/src/widgets/menu/lv_menu.c
   lvgl/src/widgets/msgbox/lv_msgbox.c
   lvgl/src/widgets/objx_templ/lv_objx_templ.c
+  lvgl/src/widgets/property/lv_animimage_properties.c
   lvgl/src/widgets/property/lv_dropdown_properties.c
   lvgl/src/widgets/property/lv_image_properties.c
   lvgl/src/widgets/property/lv_keyboard_properties.c
   lvgl/src/widgets/property/lv_label_properties.c
   lvgl/src/widgets/property/lv_obj_properties.c
   lvgl/src/widgets/property/lv_roller_properties.c
+  lvgl/src/widgets/property/lv_slider_properties.c
   lvgl/src/widgets/property/lv_style_properties.c
   lvgl/src/widgets/property/lv_textarea_properties.c
   lvgl/src/widgets/roller/lv_roller.c
@@ -399,6 +458,7 @@
   gEfiAbsolutePointerProtocolGuid
   gEfiSimplePointerProtocolGuid
   gEfiDevicePathProtocolGuid
+  gEfiSimpleTextInputExProtocolGuid
 
 [BuildOptions]
 

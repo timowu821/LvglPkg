@@ -59,12 +59,15 @@ LVGL_UEFI_MOUSE *mLvglUefiMouse = NULL;
 
 static void keypad_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
 {
-  EFI_STATUS     Status;
-  EFI_INPUT_KEY  ReadKey;
+  EFI_STATUS                         Status;
+  EFI_SIMPLE_TEXT_INPUT_EX_PROTOCOL  *TxtInEx;
+  EFI_KEY_DATA                       KeyData;
+  UINT32                             KeyShift;
 
-  Status =  gST->ConIn->ReadKeyStroke (gST->ConIn, &ReadKey);
+  Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiSimpleTextInputExProtocolGuid, (VOID **)&TxtInEx);
+  Status = TxtInEx->ReadKeyStrokeEx (TxtInEx, &KeyData);
   if (!EFI_ERROR (Status)) {
-    switch (ReadKey.UnicodeChar) {
+    switch (KeyData.Key.UnicodeChar) {
       case CHAR_CARRIAGE_RETURN:
         data->key = LV_KEY_ENTER;
         break;
@@ -73,8 +76,13 @@ static void keypad_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
         data->key = LV_KEY_BACKSPACE;
         break;
 
+      case CHAR_TAB:
+        KeyShift = KeyData.KeyState.KeyShiftState;
+        data->key = (KeyShift & EFI_SHIFT_STATE_VALID) && (KeyShift & (EFI_RIGHT_SHIFT_PRESSED | EFI_LEFT_SHIFT_PRESSED)) ? LV_KEY_PREV : LV_KEY_NEXT;
+        break;
+
       case CHAR_NULL:
-        switch (ReadKey.ScanCode) {
+        switch (KeyData.Key.ScanCode) {
         case SCAN_UP:
           data->key = LV_KEY_UP;
           break;
@@ -122,11 +130,10 @@ static void keypad_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
         break;
 
       case CHAR_LINEFEED:
-      case CHAR_TAB:
         break;
 
       default:
-        data->key = ReadKey.UnicodeChar;
+        data->key = KeyData.Key.UnicodeChar;
         break;
     }
 

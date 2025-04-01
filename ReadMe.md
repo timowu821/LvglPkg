@@ -3,7 +3,7 @@
 ## Build
 
 ```
-build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2015x86 -b RELEASE
+build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2022 -b RELEASE
 ```
 
 ## LvglLib Usage
@@ -41,7 +41,7 @@ build -p LvglPkg\LvglPkg.dsc -a X64 -t VS2015x86 -b RELEASE
 - [ ] Mouse Wheel
 - [x] Log/Debug Print
 - [ ] File System
-- [ ] VS2022/GCC/Clang
+- [ ] ~~VS2022~~/~~AARCH64-GCC~~/Clang
 - [ ] Code Clean(Remove Unused Source File in .inf)
 - [ ] ...
 
