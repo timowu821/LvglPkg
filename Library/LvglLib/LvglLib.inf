@@ -12,9 +12,11 @@
   INF_VERSION     = 0x00010005
   BASE_NAME       = LvglLib
   FILE_GUID       = DB82E73C-46EF-4490-9E6E-70E7AE65CCBB  
-  MODULE_TYPE     = BASE
+  MODULE_TYPE     = DXE_DRIVER
   VERSION_STRING  = 1.0
-  LIBRARY_CLASS   = LvglLib
+  LIBRARY_CLASS   = LvglLib|DXE_DRIVER UEFI_APPLICATION
+  CONSTRUCTOR     = LvglLibConstructor
+  DESTRUCTOR      = LvglLibDestructor
 
 [Sources]
   LvglLib.c

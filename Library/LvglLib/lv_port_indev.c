@@ -239,20 +239,6 @@ EfiMouseInit (
   BOOLEAN                        SimplePointerSupport = FALSE;
 
   HandleCount = 0;
-  Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiSimplePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
-  for (Index = 0; Index < HandleCount; Index++) {
-    Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiDevicePathProtocolGuid, (VOID **)&DevicePath);
-    if (!EFI_ERROR (Status)) {
-      SimplePointerSupport = TRUE;
-      break;
-    }
-  }
-  if (HandleBuffer!= NULL) {
-    FreePool (HandleBuffer);
-    HandleBuffer = NULL;
-  }
-
-  HandleCount = 0;
   Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiAbsolutePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
   for (Index = 0; Index < HandleCount; Index++) {
     Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiDevicePathProtocolGuid, (VOID **)&DevicePath);
@@ -266,9 +252,29 @@ EfiMouseInit (
     HandleBuffer = NULL;
   }
 
+  if (AbsPointerSupport) {
+    goto StartInit;
+  }
+
+  HandleCount = 0;
+  Status = gBS->LocateHandleBuffer (ByProtocol, &gEfiSimplePointerProtocolGuid, NULL, &HandleCount, &HandleBuffer);
+  for (Index = 0; Index < HandleCount; Index++) {
+    Status = gBS->HandleProtocol (HandleBuffer[Index], &gEfiDevicePathProtocolGuid, (VOID **)&DevicePath);
+    if (!EFI_ERROR (Status)) {
+      SimplePointerSupport = TRUE;
+      break;
+    }
+  }
+  if (HandleBuffer!= NULL) {
+    FreePool (HandleBuffer);
+    HandleBuffer = NULL;
+  }
+
   if (!AbsPointerSupport && !SimplePointerSupport) {
     return EFI_UNSUPPORTED;
   }
+
+StartInit:
 
   mLvglUefiMouse = malloc (sizeof (LVGL_UEFI_MOUSE));
 
@@ -281,7 +287,7 @@ EfiMouseInit (
   if (AbsPointerSupport) {
     Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiAbsolutePointerProtocolGuid, (VOID **)&AbsPointer);
     if (!EFI_ERROR (Status) && AbsPointer != NULL) {
-      AbsPointer->Reset(AbsPointer, TRUE);
+      // AbsPointer->Reset(AbsPointer, TRUE);
       mLvglUefiMouse->AbsPointer = AbsPointer;
     }
   }
@@ -290,7 +296,7 @@ EfiMouseInit (
   if (SimplePointerSupport && !AbsPointerSupport) {
     Status = gBS->HandleProtocol (gST->ConsoleInHandle, &gEfiSimplePointerProtocolGuid, (VOID **)&SimplePointer);
     if (!EFI_ERROR (Status) && SimplePointer != NULL) {
-      SimplePointer->Reset(SimplePointer, TRUE);
+      // SimplePointer->Reset(SimplePointer, TRUE);
       mLvglUefiMouse->SimplePointer = SimplePointer;
     }
   }
@@ -350,7 +356,7 @@ lv_indev_t * lv_uefi_mouse_create(lv_display_t * disp)
     LV_IMG_DECLARE(mouse_cursor_icon);
     lv_obj_t * mouse_cursor = lv_image_create(lv_screen_active());
     lv_image_set_src(mouse_cursor, &mouse_cursor_icon);
-    // lv_indev_set_cusor_start(indev);
+    lv_indev_set_cusor_start(indev);
     lv_indev_set_cursor(indev, mouse_cursor);
 
     return indev;

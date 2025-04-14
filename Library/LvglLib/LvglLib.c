@@ -50,6 +50,10 @@ UefiLvglInit (
   EFI_STATUS                         Status;
   UINTN                              Width, Heigth;
 
+  if (mUefiLvglInitDone) {
+    return EFI_SUCCESS;
+  }
+
   Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
   if (EFI_ERROR(Status)) {
     return EFI_UNSUPPORTED;
@@ -57,7 +61,10 @@ UefiLvglInit (
 
   lv_init();
 
+#if 0
+  // Need real TimerLib
   UefiLvglTickInit();
+#endif
 
 #if LV_USE_LOG
   lv_log_register_print_cb (efi_lv_log_print);
@@ -82,6 +89,10 @@ UefiLvglDeinit (
   )
 {
 
+  if (!mUefiLvglInitDone) {
+    return EFI_SUCCESS;
+  }
+
   lv_deinit();
 
   lv_port_indev_close();
@@ -89,6 +100,8 @@ UefiLvglDeinit (
   gST->ConOut->ClearScreen (gST->ConOut);
   gST->ConOut->SetCursorPosition (gST->ConOut, 0, 0);
   gST->ConOut->EnableCursor (gST->ConOut, TRUE);
+
+  mUefiLvglInitDone = FALSE;
 
   return EFI_SUCCESS;
 }
@@ -128,6 +141,34 @@ UefiLvglAppRegister (
     UefiLvglDeinit();
     return EFI_UNSUPPORTED;
   }
+
+  return EFI_SUCCESS;
+}
+
+
+EFI_STATUS
+EFIAPI
+LvglLibConstructor (
+  IN EFI_HANDLE        ImageHandle,
+  IN EFI_SYSTEM_TABLE  *SystemTable
+  )
+{
+
+  UefiLvglInit ();
+
+  return EFI_SUCCESS;
+}
+
+
+EFI_STATUS
+EFIAPI
+LvglLibDestructor (
+  IN EFI_HANDLE        ImageHandle,
+  IN EFI_SYSTEM_TABLE  *SystemTable
+  )
+{
+
+  UefiLvglDeinit();
 
   return EFI_SUCCESS;
 }
