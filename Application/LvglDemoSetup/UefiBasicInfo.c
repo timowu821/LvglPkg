@@ -332,6 +332,20 @@ UefiDimmInfo (
   lv_obj_set_style_text_align(DimmInfoLabel, LV_TEXT_ALIGN_LEFT, 0);
 }
 
+void lv_uefi_clock(lv_obj_t *parent);
+void lv_uefi_calendar(lv_obj_t *parent);
+
+VOID
+UefiTime (
+  lv_obj_t * parent
+  )
+{
+
+  lv_uefi_clock (parent);
+  lv_uefi_calendar (parent);
+
+}
+
 
 VOID
 UefiBasicInfo (
@@ -344,6 +358,7 @@ UefiBasicInfo (
   Status = gBS->LocateProtocol(&gEfiSmbiosProtocolGuid, NULL, (VOID**)&Smbios);
   if (!EFI_ERROR (Status)) {
     UefiLogoInfo (parent);
+    UefiTime (parent);
     UefiBiosInfo (parent, Smbios);
     UefiCpuInfo (parent, Smbios);
     UefiDimmInfo (parent, Smbios);

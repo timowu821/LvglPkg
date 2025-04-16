@@ -21,6 +21,7 @@
   LvglDemoSetup.c
   UefiBasicInfo.c
   UefiBootOptions.c
+  UefiTime.c
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -30,6 +31,7 @@
 [LibraryClasses]
   UefiApplicationEntryPoint
   UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
   UefiLib
   MemoryAllocationLib
   BaseMemoryLib
