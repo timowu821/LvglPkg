@@ -1,4 +1,12 @@
-#include "UefiSetupCommon.h"
+/** @file
+  This sample application bases on LvglLib.
+
+  Copyright (c) 2025, Yang Gang. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#include "UefiDashboardCommon.h"
 #include <Library/UefiBootManagerLib.h>
 
 static lv_obj_t * BootOptionsList;

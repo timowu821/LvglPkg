@@ -136,7 +136,7 @@
 
   LvglPkg/Application/LvglDemos/LvglDemos.inf
 
-  LvglPkg/Application/LvglDemoSetup/LvglDemoSetup.inf
+  LvglPkg/Application/UefiDashboard/UefiDashboard.inf
 
 [BuildOptions]
 

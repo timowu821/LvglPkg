@@ -1,4 +1,12 @@
-#include "UefiSetupCommon.h"
+/** @file
+  This sample application bases on LvglLib.
+
+  Copyright (c) 2025, Yang Gang. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#include "UefiDashboardCommon.h"
 
 
 LV_ATTRIBUTE_MEM_ALIGN UINT8 *mLogoData = NULL;
@@ -358,7 +366,6 @@ UefiBasicInfo (
   Status = gBS->LocateProtocol(&gEfiSmbiosProtocolGuid, NULL, (VOID**)&Smbios);
   if (!EFI_ERROR (Status)) {
     UefiLogoInfo (parent);
-    UefiTime (parent);
     UefiBiosInfo (parent, Smbios);
     UefiCpuInfo (parent, Smbios);
     UefiDimmInfo (parent, Smbios);

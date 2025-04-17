@@ -18,30 +18,25 @@ build -p LvglPkg/LvglPkg.dsc -a AARCH64 -t GCC5 -b RELEASE
 
 1. Include LvglLib like other UEFI Library Class in your UEFI_APPLICATION
 2. In App ENTRY_POINT:
-   - Call `UefiLvglInit()` to do init
+   - ~~Call `UefiLvglInit()` to do init~~
    - Call `UefiLvglAppRegister (MyApp)` to show `MyApp`
-   - Call `UefiLvglDeinit()` to do deinit, and you may need another code to do clear up for `MyApp`
+   - ~~Call `UefiLvglDeinit()` to do deinit, and you may need another code to do clear up for `MyApp`~~
 
 ## Demo
 
-- [LvglDemoSetup.efi](./Demo/Bin/LvglDemoSetup.efi)
-  ![Setup1](./Demo/Images/Setup1.png)
-  ![Setup2](./Demo/Images/Setup2.png)
-
-- [LvglDemoApp.efi(New, just show UEFI logo)](./Demo/Bin/LvglDemoApp.efi)
-  ![LvglDemoApp](./Demo/Images/LvglDemoApp.png)
-
-- [LvglApp.efi(Old)](./Demo/Bin/LvglApp.efi)
-  ![LvglApp](./Demo/Images/Demo.png)
+- [UefiDashboard.efi](./Demo/Bin/UefiDashboard.efi)
+  ![UefiDashboard1](./Demo/Images/UefiDashboard/UefiDashboard1.png)
+  ![UefiDashboard2](./Demo/Images/UefiDashboard/UefiDashboard2.png)
+  ![UefiDashboard3](./Demo/Images/UefiDashboard/UefiDashboard3.png)
 
 ### Demo Usage
 
 1. Download [OVMF.fd](./Demo/Bin/OVMF.fd)
-2. Create EfiFiles folder and copy Demo efi binary to it
-3. qemu-system-x86_64.exe -bios OVMF.fd -hda fat:rw:EfiFiles -net none -usb -device usb-mouse -serial file:./log.txt
+2. Create EfiFiles folder and copy `UefiDashboard.efi` binary to it
+3. qemu-system-x86_64.exe -bios OVMF.fd -hda fat:rw:EfiFiles -net none -usb -device usb-mouse -serial stdio
 4. Boot to UEFI Shell
-5. `fs0:` then [Enter], `DemoName.efi` then [Enter]
-6. Press `Esc` to exit Demo
+5. `fs0:` then [Enter], `UefiDashboard.efi` then [Enter]
+6. Press `Esc` to exit `UefiDashboard`
 
 ## TODO
 - [x] Absolute Pointer Mouse

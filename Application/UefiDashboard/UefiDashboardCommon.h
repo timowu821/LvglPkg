@@ -1,5 +1,13 @@
-#ifndef __UEFI_SETUP_COMMON_H__
-#define __UEFI_SETUP_COMMON_H__
+/** @file
+  This sample application bases on LvglLib.
+
+  Copyright (c) 2025, Yang Gang. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#ifndef __UEFI_DASHBOARD_COMMON_H__
+#define __UEFI_DASHBOARD_COMMON_H__
 
 #include <Uefi.h>
 #include <IndustryStandard/SmBios.h>
@@ -24,6 +32,11 @@ UefiBasicInfo (
 
 VOID
 UefiBootOptions (
+  lv_obj_t * parent
+  );
+
+VOID
+UefiTime (
   lv_obj_t * parent
   );
 

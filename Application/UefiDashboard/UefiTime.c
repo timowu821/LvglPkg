@@ -1,5 +1,12 @@
-#include "Uefi/UefiBaseType.h"
-#include "UefiSetupCommon.h"
+/** @file
+  This sample application bases on LvglLib.
+
+  Copyright (c) 2025, Yang Gang. All rights reserved.<BR>
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#include "UefiDashboardCommon.h"
 
 
 #if LV_USE_FLOAT
@@ -122,20 +129,20 @@ void lv_uefi_clock(lv_obj_t *parent)
     second_hand = lv_line_create(scale);
     lv_line_set_points_mutable(second_hand, second_hand_points, 2);
 
-    lv_obj_set_style_line_width(second_hand, 1, 0);
+    lv_obj_set_style_line_width(second_hand, 2, 0);
     lv_obj_set_style_line_rounded(second_hand, true, 0);
-    lv_obj_set_style_line_color(second_hand, lv_color_black(), 0);
+    lv_obj_set_style_line_color(second_hand, lv_palette_main(LV_PALETTE_GREEN), 0);
 
     minute_hand = lv_line_create(scale);
     lv_line_set_points_mutable(minute_hand, minute_hand_points, 2);
 
-    lv_obj_set_style_line_width(minute_hand, 3, 0);
+    lv_obj_set_style_line_width(minute_hand, 4, 0);
     lv_obj_set_style_line_rounded(minute_hand, true, 0);
     lv_obj_set_style_line_color(minute_hand, lv_color_white(), 0);
 
     hour_hand = lv_line_create(scale);
 
-    lv_obj_set_style_line_width(hour_hand, 5, 0);
+    lv_obj_set_style_line_width(hour_hand, 6, 0);
     lv_obj_set_style_line_rounded(hour_hand, true, 0);
     lv_obj_set_style_line_color(hour_hand, lv_palette_main(LV_PALETTE_RED), 0);
 

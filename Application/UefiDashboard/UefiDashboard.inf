@@ -1,7 +1,7 @@
 ## @file
-#  Demo APP that use LvglLib.
+#  UefiDashboard APP that use LvglLib.
 #
-#  Copyright (c) 2024, Yang Gang. All rights reserved.<BR>
+#  Copyright (c) 2025, Yang Gang. All rights reserved.<BR>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -10,7 +10,7 @@
 
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = LvglDemoSetup
+  BASE_NAME                      = UefiDashboard
   FILE_GUID                      = 18D17609-0798-4905-8392-E04B9E054F0D  
   MODULE_TYPE                    = UEFI_APPLICATION
   VERSION_STRING                 = 1.0
@@ -18,7 +18,7 @@
 
 
 [Sources]
-  LvglDemoSetup.c
+  UefiDashboard.c
   UefiBasicInfo.c
   UefiBootOptions.c
   UefiTime.c
