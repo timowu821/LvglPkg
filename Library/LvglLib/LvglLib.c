@@ -3,12 +3,10 @@
 
 #include <Library/LvglLib.h>
 
-extern BOOLEAN  mEscExit;
+extern UINT8  mExitBtnYes;
 
 BOOLEAN  mTickSupport = FALSE;
 STATIC BOOLEAN  mUefiLvglInitDone = FALSE;
-
-lv_display_t * lv_uefi_disp_create(int32_t hor_res, int32_t ver_res);
 
 #if LV_USE_LOG
 static void efi_lv_log_print(lv_log_level_t level, const char * buf)
@@ -125,8 +123,10 @@ UefiLvglAppRegister (
     // call user GUI APP
     AppRegister();
 
+    LvglUefiEscExitRegister ();
+
     while (1) {
-      if (mEscExit) {
+      if (mExitBtnYes == EXIT_BTN_YES) {
         break;
       }
 

@@ -22,4 +22,18 @@
 
 #include "LvglUefiPort.h"
 
+
+#define  EXIT_BTN_NONE  0x0
+#define  EXIT_BTN_YES   0x1
+#define  EXIT_BTN_NO    0x2
+
+
+lv_display_t * lv_uefi_disp_create(int32_t hor_res, int32_t ver_res);
+
+VOID
+EFIAPI
+LvglUefiEscExitRegister (
+  VOID
+  );
+
 #endif

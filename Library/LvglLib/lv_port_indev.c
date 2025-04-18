@@ -14,7 +14,6 @@
 /*********************
  *      DEFINES
  *********************/
-BOOLEAN  mEscExit = FALSE;
 
 extern const lv_img_dsc_t mouse_cursor_icon;
 
@@ -101,7 +100,6 @@ static void keypad_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
 
         case SCAN_ESC:
           data->key = LV_KEY_ESC;
-          mEscExit = TRUE;
           break;
 
         case SCAN_DELETE:

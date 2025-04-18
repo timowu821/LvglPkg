@@ -62,10 +62,6 @@ LvglUefiDemoSetup (
         if(indev_type == LV_INDEV_TYPE_KEYPAD) {
             lv_indev_set_group(indev, g);
         }
-
-        if(indev_type == LV_INDEV_TYPE_POINTER) {
-            lv_indev_set_group(indev, g);
-        }
     }
 
     tv = lv_tabview_create(lv_screen_active());
