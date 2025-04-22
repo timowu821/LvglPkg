@@ -174,3 +174,14 @@ void lv_uefi_calendar(lv_obj_t *parent)
     lv_calendar_header_dropdown_create(calendar);
 }
 
+
+VOID
+UefiTime (
+  lv_obj_t * parent
+  )
+{
+
+  lv_uefi_clock (parent);
+  lv_uefi_calendar (parent);
+
+}

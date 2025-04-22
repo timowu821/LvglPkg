@@ -16,6 +16,7 @@ static lv_obj_t * tv;
 static lv_obj_t * t1;
 static lv_obj_t * t2;
 static lv_obj_t * t3;
+static lv_style_t style_title;
 
 
 static void BiosInfoCreate(lv_obj_t * parent)
@@ -64,8 +65,10 @@ LvglUefiDemoSetup (
         }
     }
 
+    lv_style_init(&style_title);
+    lv_style_set_text_font(&style_title, &lv_font_montserrat_24);
+
     tv = lv_tabview_create(lv_screen_active());
-    lv_tabview_set_tab_bar_position(tv, LV_DIR_LEFT);
 
     lv_obj_set_style_bg_color(tv, lv_palette_lighten(LV_PALETTE_RED, 2), 0);
 
@@ -82,7 +85,14 @@ LvglUefiDemoSetup (
     t3 = lv_tabview_add_tab(tv, "Boot Manager");
     lv_obj_set_style_text_font(tv, &lv_font_montserrat_20, 0);
 
-    lv_tabview_set_tab_bar_size(tv, 200);
+    lv_obj_t * tab_bar = lv_tabview_get_tab_bar(tv);
+    lv_obj_set_style_pad_left(tab_bar, LV_HOR_RES / 2, 0);
+
+    lv_obj_t * label = lv_label_create(tab_bar);
+    lv_obj_add_style(label, &style_title, 0);
+    lv_obj_add_flag(label, LV_OBJ_FLAG_IGNORE_LAYOUT);
+    lv_label_set_text_fmt(label, "UEFI Dashboard");
+    lv_obj_align(label, LV_ALIGN_LEFT_MID, -LV_HOR_RES / 2 + 25, 0);
 
     BiosInfoCreate (t1);
     UefiTimeCreate (t2);
