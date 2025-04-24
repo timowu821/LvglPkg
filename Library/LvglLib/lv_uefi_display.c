@@ -2,7 +2,8 @@
 
 
 typedef struct {
-    uint8_t    *buffer[2];
+    EFI_GRAPHICS_OUTPUT_PROTOCOL *EfiGop;
+    uint8_t                      *buffer[2];
 } uefi_disp_data_t;
 
 
@@ -20,31 +21,29 @@ static void uefi_disp_delete_evt_cb(lv_event_t * e)
 
 void uefi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t * color32_p)
 {
-  EFI_GRAPHICS_OUTPUT_PROTOCOL       *GraphicsOutput;
   EFI_STATUS                         Status;
   UINTN                              Width, Heigth;
+  uefi_disp_data_t                   *uefi_disp_data;
+  UINTN                              Delta;
 
-  Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
-  if (EFI_ERROR(Status)) {
-    return;
-  }
+  uefi_disp_data = lv_display_get_driver_data(disp);
 
   Width = area->x2 - area->x1 + 1;
   Heigth = area->y2 - area->y1 + 1;
+  Delta = uefi_disp_data->EfiGop->Mode->Info->HorizontalResolution * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL);
 
-  Status =  GraphicsOutput->Blt (
-                              GraphicsOutput,
-                              (EFI_GRAPHICS_OUTPUT_BLT_PIXEL *)color32_p,
-                              EfiBltBufferToVideo,
-                              0,
-                              0,
-                              (UINTN)area->x1,
-                              (UINTN)area->y1,
-                              Width,
-                              Heigth,
-                              0
-                              );
-
+  Status = uefi_disp_data->EfiGop->Blt (
+                                     uefi_disp_data->EfiGop,
+                                     (EFI_GRAPHICS_OUTPUT_BLT_PIXEL *)color32_p,
+                                     EfiBltBufferToVideo,
+                                     (UINTN)area->x1,
+                                     (UINTN)area->y1,
+                                     (UINTN)area->x1,
+                                     (UINTN)area->y1,
+                                     Width,
+                                     Heigth,
+                                     Delta
+                                     );
 
   lv_display_flush_ready(disp);
 }
@@ -52,9 +51,19 @@ void uefi_disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color32_t *
 
 lv_display_t * lv_uefi_disp_create(int32_t hor_res, int32_t ver_res)
 {
+    EFI_STATUS                    Status;
+    EFI_GRAPHICS_OUTPUT_PROTOCOL  *GraphicsOutput;
+
+    Status = gBS->LocateProtocol (&gEfiGraphicsOutputProtocolGuid, NULL, (VOID **) &GraphicsOutput);
+    if (EFI_ERROR(Status)) {
+        return NULL;
+    }
+
     uefi_disp_data_t * uefi_disp_data = lv_malloc_zeroed(sizeof(uefi_disp_data_t));
     LV_ASSERT_MALLOC(uefi_disp_data);
     if(NULL == uefi_disp_data) return NULL;
+
+    uefi_disp_data->EfiGop = GraphicsOutput;
 
     lv_display_t * disp = lv_display_create(hor_res, ver_res);
     if(NULL == disp) {
@@ -69,7 +78,7 @@ lv_display_t * lv_uefi_disp_create(int32_t hor_res, int32_t ver_res)
     uefi_disp_data->buffer[0] = malloc (BufSize);
     uefi_disp_data->buffer[1] = malloc (BufSize);
 
-    lv_display_set_buffers(disp, uefi_disp_data->buffer[0], uefi_disp_data->buffer[1], BufSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_buffers(disp, uefi_disp_data->buffer[0], uefi_disp_data->buffer[1], BufSize, LV_DISPLAY_RENDER_MODE_DIRECT);
 
     return disp;
 }
