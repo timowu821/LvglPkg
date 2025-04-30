@@ -7,6 +7,13 @@
 **/
 
 #include "UefiDashboardCommon.h"
+#include "src/core/lv_obj.h"
+#include "src/core/lv_obj_pos.h"
+#include "src/misc/lv_area.h"
+#include "src/misc/lv_color.h"
+#include "src/misc/lv_style.h"
+#include "src/misc/lv_text.h"
+#include "src/widgets/table/lv_table.h"
 
 
 LV_ATTRIBUTE_MEM_ALIGN UINT8 *mLogoData = NULL;
@@ -146,6 +153,39 @@ LibGetSmbiosString (
 }
 
 
+static void basic_info_draw_event_cb(lv_event_t * e)
+{
+    lv_draw_task_t * draw_task = lv_event_get_draw_task(e);
+    lv_draw_dsc_base_t * base_dsc = (lv_draw_dsc_base_t *)lv_draw_task_get_draw_dsc(draw_task);
+    /*If the cells are drawn...*/
+    if(base_dsc->part == LV_PART_ITEMS) {
+        uint32_t row = base_dsc->id1;
+        uint32_t col = base_dsc->id2;
+
+        /*Make the texts in the first cell center aligned*/
+        if(row == 0) {
+            lv_draw_label_dsc_t * label_draw_dsc = lv_draw_task_get_label_dsc(draw_task);
+            if(label_draw_dsc) {
+                label_draw_dsc->align = LV_TEXT_ALIGN_CENTER;
+                label_draw_dsc->font = &lv_font_montserrat_24;
+            }
+        }
+        /*In the first column align the texts to the right*/
+        else if(col == 0) {
+            lv_draw_label_dsc_t * label_draw_dsc = lv_draw_task_get_label_dsc(draw_task);
+            if(label_draw_dsc) {
+                label_draw_dsc->align = LV_TEXT_ALIGN_LEFT;
+            }
+        }
+
+        lv_draw_fill_dsc_t * fill_draw_dsc = lv_draw_task_get_fill_dsc(draw_task);
+        if(fill_draw_dsc) {
+            fill_draw_dsc->opa = LV_OPA_TRANSP;
+        }
+    }
+}
+
+
 VOID
 UefiBiosInfo (
   lv_obj_t                  *parent,
@@ -158,13 +198,6 @@ UefiBiosInfo (
   EFI_SMBIOS_TABLE_HEADER   *SmbiosHdr;
   SMBIOS_STRUCTURE_POINTER  SmbiosStructureP;
   CHAR8                     *BiosVendor, *BiosVersion;
-  CHAR8                     BiosInfoStr[256+1];
-  int32_t                   obj_w;
-
-  lv_obj_t * BiosInfoLabelT = lv_label_create(parent);
-  lv_label_set_text(BiosInfoLabelT, "\nBIOS Info:");
-  lv_obj_set_style_text_font(BiosInfoLabelT, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(BiosInfoLabelT, LV_TEXT_ALIGN_LEFT, 0);
 
   SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
   SmbiosType = EFI_SMBIOS_TYPE_BIOS_INFORMATION;
@@ -174,15 +207,37 @@ UefiBiosInfo (
   BiosVendor = LibGetSmbiosString(&SmbiosStructureP, SmbiosStructureP.Type0->Vendor);
   BiosVersion = LibGetSmbiosString(&SmbiosStructureP, SmbiosStructureP.Type0->BiosVersion);
 
-  AsciiSPrint(BiosInfoStr, sizeof (BiosInfoStr), "    Vendor: %a\n    Version: %a", BiosVendor, BiosVersion);
-  lv_obj_t * BiosInfoLabel = lv_label_create(parent);
-  lv_label_set_text(BiosInfoLabel, BiosInfoStr);
-  lv_obj_set_style_text_font(BiosInfoLabel, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(BiosInfoLabel, LV_TEXT_ALIGN_LEFT, 0);
+  lv_obj_t * table = lv_table_create(parent);
+  lv_obj_set_width(table, lv_pct(45));
+  lv_obj_set_style_max_height(table, lv_pct(50), 0);
+  lv_obj_add_flag(table, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
+  lv_obj_add_event_cb(table, basic_info_draw_event_cb, LV_EVENT_DRAW_TASK_ADDED, NULL);
 
-  obj_w = 8 * (int32_t) MAX((AsciiStrSize (BiosVendor) + AsciiStrSize ("    Vendor: ")), (AsciiStrSize (BiosVersion) + AsciiStrSize ("    Version: ")));
-  lv_obj_set_width(BiosInfoLabel, obj_w);
+  lv_obj_set_style_border_width(table, 2, LV_PART_MAIN);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_MAIN);
+
+  lv_obj_set_style_border_width(table, 1, LV_PART_ITEMS);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_ITEMS);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_ITEMS);
+
+  lv_obj_set_style_bg_opa(table, LV_OPA_TRANSP, 0);
+
+  lv_obj_update_layout(table);
+  const int32_t col_w = lv_obj_get_content_width(table) / 2;
+
+  lv_table_set_column_width(table, 0, col_w);
+  lv_table_set_column_width(table, 1, col_w);
+
+  lv_table_set_cell_value(table, 0, 0, "BIOS Info");
+  lv_table_set_cell_value(table, 1, 0, "Vendor");
+  lv_table_set_cell_value(table, 2, 0, "Version");
+
+  lv_table_set_cell_value(table, 0, 1, " ");
+  lv_table_set_cell_value(table, 1, 1, BiosVendor);
+  lv_table_set_cell_value(table, 2, 1, BiosVersion);
   
+  lv_table_set_cell_ctrl(table, 0, 0, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
 }
 
 
@@ -200,12 +255,6 @@ UefiCpuInfo (
   UINT8                     SocketCount = 0;
   UINT16                    CpuSpeed = 0;
   CHAR8                     *Manufacturer = NULL, *Version = NULL;
-  CHAR8                     CpuInfoStr[256+1];
-
-  lv_obj_t * CpuInfoLabelT = lv_label_create(parent);
-  lv_label_set_text(CpuInfoLabelT, "\nCPU Info:");
-  lv_obj_set_style_text_font(CpuInfoLabelT, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(CpuInfoLabelT, LV_TEXT_ALIGN_LEFT, 0);
 
   SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
   SmbiosType = EFI_SMBIOS_TYPE_PROCESSOR_INFORMATION;
@@ -232,11 +281,41 @@ UefiCpuInfo (
     SocketCount++;
   }
 
-  AsciiSPrint(CpuInfoStr, sizeof (CpuInfoStr), "    %a - %a @ %dMHz * %d", Manufacturer, Version, CpuSpeed, SocketCount);
-  lv_obj_t * CpuInfoLabel = lv_label_create(parent);
-  lv_label_set_text(CpuInfoLabel, CpuInfoStr);
-  lv_obj_set_style_text_font(CpuInfoLabel, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(CpuInfoLabel, LV_TEXT_ALIGN_LEFT, 0);
+  lv_obj_t * table = lv_table_create(parent);
+  lv_obj_set_width(table, lv_pct(45));
+  lv_obj_set_style_max_height(table, lv_pct(60), 0);
+  lv_obj_add_flag(table, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
+  lv_obj_add_event_cb(table, basic_info_draw_event_cb, LV_EVENT_DRAW_TASK_ADDED, NULL);
+
+  lv_obj_set_style_border_width(table, 2, LV_PART_MAIN);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_MAIN);
+
+  lv_obj_set_style_border_width(table, 1, LV_PART_ITEMS);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_ITEMS);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_ITEMS);
+
+  lv_obj_set_style_bg_opa(table, LV_OPA_TRANSP, 0);
+
+  lv_obj_update_layout(table);
+  const int32_t col_w = lv_obj_get_content_width(table) / 2;
+
+  lv_table_set_column_width(table, 0, col_w);
+  lv_table_set_column_width(table, 1, col_w);
+
+  lv_table_set_cell_value(table, 0, 0, "CPU Info");
+  lv_table_set_cell_value(table, 1, 0, "Manufacturer");
+  lv_table_set_cell_value(table, 2, 0, "Version");
+  lv_table_set_cell_value(table, 3, 0, "Speed");
+  lv_table_set_cell_value(table, 4, 0, "SocketCount");
+
+  lv_table_set_cell_value(table, 0, 1, " ");
+  lv_table_set_cell_value(table, 1, 1, Manufacturer);
+  lv_table_set_cell_value(table, 2, 1, Version);
+  lv_table_set_cell_value_fmt(table, 3, 1, "%dMHz", CpuSpeed);
+  lv_table_set_cell_value_fmt(table, 4, 1, "%d", SocketCount);
+  
+  lv_table_set_cell_ctrl(table, 0, 0, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
 }
 
 
@@ -256,13 +335,7 @@ UefiDimmInfo (
   UINT64                    DimmSize = 0;
   UINT32                    ExtendedSize = 0;
   CHAR8                     *Manufacturer = NULL, *SerialNumber = NULL;
-  CHAR8                     DimmInfoStr[256+1];
   CHAR8                     DimmSizeStr[10];
-
-  lv_obj_t * DimmInfoLabelT = lv_label_create(parent);
-  lv_label_set_text(DimmInfoLabelT, "\nDIMM Info:");
-  lv_obj_set_style_text_font(DimmInfoLabelT, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(DimmInfoLabelT, LV_TEXT_ALIGN_LEFT, 0);
 
   SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
   SmbiosType = EFI_SMBIOS_TYPE_MEMORY_DEVICE;
@@ -333,11 +406,43 @@ UefiDimmInfo (
     AsciiSPrint (DimmSizeStr, sizeof (DimmSizeStr), "%dMB ", DimmSize);
   }
 
-  AsciiSPrint(DimmInfoStr, sizeof (DimmInfoStr), "    %a%a(%a) @ %dMT/s * %d", DimmSizeStr, Manufacturer, SerialNumber != NULL ? SerialNumber : "Null SN", DimmSpeed, DimmCount);
-  lv_obj_t * DimmInfoLabel = lv_label_create(parent);
-  lv_label_set_text(DimmInfoLabel, DimmInfoStr);
-  lv_obj_set_style_text_font(DimmInfoLabel, &lv_font_montserrat_16, 0);
-  lv_obj_set_style_text_align(DimmInfoLabel, LV_TEXT_ALIGN_LEFT, 0);
+  lv_obj_t * table = lv_table_create(parent);
+  lv_obj_set_width(table, lv_pct(45));
+  lv_obj_set_style_max_height(table, lv_pct(70), 0);
+  lv_obj_add_flag(table, LV_OBJ_FLAG_SEND_DRAW_TASK_EVENTS);
+  lv_obj_add_event_cb(table, basic_info_draw_event_cb, LV_EVENT_DRAW_TASK_ADDED, NULL);
+
+  lv_obj_set_style_border_width(table, 2, LV_PART_MAIN);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_MAIN);
+
+  lv_obj_set_style_border_width(table, 1, LV_PART_ITEMS);
+  lv_obj_set_style_border_color(table, lv_color_black(), LV_PART_ITEMS);
+  lv_obj_set_style_border_side(table, LV_BORDER_SIDE_FULL, LV_PART_ITEMS);
+
+  lv_obj_set_style_bg_opa(table, LV_OPA_TRANSP, 0);
+
+  lv_obj_update_layout(table);
+  const int32_t col_w = lv_obj_get_content_width(table) / 2;
+
+  lv_table_set_column_width(table, 0, col_w);
+  lv_table_set_column_width(table, 1, col_w);
+
+  lv_table_set_cell_value(table, 0, 0, "Memory Info");
+  lv_table_set_cell_value(table, 1, 0, "Manufacturer");
+  lv_table_set_cell_value(table, 2, 0, "DimmSize");
+  lv_table_set_cell_value(table, 3, 0, "SerialNumber");
+  lv_table_set_cell_value(table, 4, 0, "DimmSpeed");
+  lv_table_set_cell_value(table, 5, 0, "DimmCount");
+
+  lv_table_set_cell_value(table, 0, 1, " ");
+  lv_table_set_cell_value(table, 1, 1, Manufacturer);
+  lv_table_set_cell_value(table, 2, 1, DimmSizeStr);
+  lv_table_set_cell_value(table, 3, 1, (SerialNumber != NULL) ? SerialNumber : "Null SN");
+  lv_table_set_cell_value_fmt(table, 4, 1, "%dMT/s", DimmSpeed);
+  lv_table_set_cell_value_fmt(table, 5, 1, "%d", DimmCount);
+  
+  lv_table_set_cell_ctrl(table, 0, 0, LV_TABLE_CELL_CTRL_MERGE_RIGHT);
 }
 
 
@@ -349,11 +454,19 @@ UefiBasicInfo (
   EFI_STATUS                Status;
   EFI_SMBIOS_PROTOCOL       *Smbios;
 
+  UefiLogoInfo (parent);
+
   Status = gBS->LocateProtocol(&gEfiSmbiosProtocolGuid, NULL, (VOID**)&Smbios);
   if (!EFI_ERROR (Status)) {
-    UefiLogoInfo (parent);
-    UefiBiosInfo (parent, Smbios);
-    UefiCpuInfo (parent, Smbios);
-    UefiDimmInfo (parent, Smbios);
+    lv_obj_t * cont_info = lv_obj_create(parent);
+    lv_obj_set_size(cont_info, lv_pct(90), lv_pct(90));
+    lv_obj_align(cont_info, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_flex_flow(cont_info, LV_FLEX_FLOW_COLUMN_WRAP);
+    lv_obj_set_style_bg_opa(cont_info, LV_OPA_TRANSP, LV_PART_MAIN);
+    lv_obj_set_style_border_opa(cont_info, LV_OPA_TRANSP, LV_PART_MAIN);
+
+    UefiBiosInfo (cont_info, Smbios);
+    UefiCpuInfo (cont_info, Smbios);
+    UefiDimmInfo (cont_info, Smbios);
   }
 }
